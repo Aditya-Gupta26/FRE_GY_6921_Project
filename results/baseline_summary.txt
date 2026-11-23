@@ -1,0 +1,71 @@
+Group 4 working baseline: hedging a 50,000-bushel Illinois corn sale with CBOT corn futures
+Data: USDA AMS Grain Basis, Illinois elevator bid for corn (pull details in data/raw/retrieval_info.json)
+
+Data checks
+  811 weeks, 811 unique dates, 0 missing values
+  largest gap between basis and cash minus futures: 1.6e-15 $/bu
+  quote days: {'Friday': 785, 'Thursday': 24, 'Wednesday': 1, 'Saturday': 1}
+  excluded label: 2019-03-15 'Mar' (contract not trading on quote date), futures 3.7320
+  excluded label: 2019-11-22 'Jan' (nonstandard contract label), futures 3.7000
+  excluded label: 2021-12-17 'Dec' (contract not trading on quote date), futures 5.8920
+  excluded label: 2021-12-23 'Dec' (contract not trading on quote date), futures 6.1140
+  suspected recording error: 2016-06-03 cash bid 4.68 (weeks before and after 3.94, 4.04); futures 4.1275, 4.1825, 4.2300; basis -0.1875, +0.4975, -0.1900
+  quotes on or after first notice day: 33
+
+Table 1: sample funnel
+  Weekly observations, 2010-01-08 to 2025-12-26            811
+  Pairs of consecutive weeks                               810
+  Pairs exactly seven days apart                           743
+  Same futures contract in both weeks                      674
+  Contract labels pass the CBOT calendar check             672
+  No suspected recording error                             670
+  Sale before first notice day (eligible)                  641
+  Eligible pairs, train                                    396
+  Eligible pairs, validation                                77
+  Eligible pairs, test                                     168
+  reasons for exclusion: {'futures contract changes within the week': 69, 'not exactly 7 days apart': 67, 'sale on or after first notice day': 29, 'suspected recording error': 2, 'contract label fails calendar check': 2}
+
+Table 2: minimum-variance hedge ratio, weekly cash change regressed on futures change (cents/bu), 2010-2019
+  h* = 0.9696 (SE 0.0179), R2 = 0.8821, 396 weeks
+  contracts = 10 x 0.9696 = 9.70, rounded to 10 (the same position as the 1:1 hedge)
+  rolling 104-week hedge ratio in the test years: lowest 0.8262, median 0.9147, highest 0.9801; contracts 8 to 10 (weeks at each count: {8: 2, 9: 136, 10: 30})
+  standard deviation of the weekly basis change (what the 1:1 hedge leaves): train 6.55, test 9.95 cents/bu
+
+Table 3: weekly change in effective sale price (cents/bu); VR = variance reduction relative to no hedge
+  sample          position                                     weeks    mean      SD    VR %           95% CI    worst     SD $
+  train 2010-2019 No hedge (0 contracts)                         396    0.10   19.00    0.00   [  0.0,   0.0]   -88.00     9501
+  train 2010-2019 1:1 hedge (10 contracts)                       396    0.24    6.55   88.12   [ 81.0,  93.7]   -67.50     3275
+  train 2010-2019 Static min-variance (10 contracts, in sample)   396    0.24    6.55   88.12   [ 81.0,  93.7]   -67.50     3275
+  test 2022-2025  No hedge (0 contracts)                         168   -1.08   18.98    0.00   [  0.0,   0.0]   -97.00     9490
+  test 2022-2025  1:1 hedge (10 contracts)                       168   -1.02    9.95   72.53   [ 53.7,  83.6]   -45.40     4974
+  test 2022-2025  Static min-variance (10 contracts)             168   -1.02    9.95   72.53   [ 53.7,  83.6]   -45.40     4974
+  test 2022-2025  Rolling min-variance (8-10 contracts)          168   -1.10    9.86   73.01   [ 56.4,  83.0]   -45.36     4931
+  test years: VR of rolling min-variance minus VR of 1:1 = 0.48 percentage points, bootstrap 95% CI [-1.13, 3.27]
+
+Forecast sample: 697 weeks (train 434, validation 81, test 182)
+Table 4: forecast of next week's cash bid change, validation years 2020-2021 (cents/bu)
+  model                            weeks     MAE    RMSE  direction %   DM vs persistence
+  Persistence (no change)             81   13.40   21.78                                 
+  Linear regression, cash only        81   13.52   21.99         48.7      0.63 (p 0.531)
+  Linear regression, with basis       81   13.26   21.29         59.0     -0.39 (p 0.693)
+Table 5: regression coefficients fitted on 2010-2019 (change in cents/bu; inputs in $/bu)
+  cash only   const           2.7542 (SE 2.9698, t 0.93)  R2 0.0094, n 434
+  cash only   cash           -0.5459 (SE 0.6210, t -0.88)  R2 0.0094, n 434
+  cash only   prev_change     8.8818 (SE 4.7060, t 1.89)  R2 0.0094, n 434
+  with basis  const          -1.9125 (SE 3.7938, t -0.50)  R2 0.0183, n 434
+  with basis  cash            0.2622 (SE 0.7429, t 0.35)  R2 0.0183, n 434
+  with basis  prev_change     7.9404 (SE 4.7148, t 1.68)  R2 0.0183, n 434
+  with basis  basis          -8.4674 (SE 4.3056, t -1.97)  R2 0.0183, n 434
+
+Saved figures: figure1_prices_and_basis.png, figure2_hedge_regression_train.png, figure3_rolling_hedge_size_test.png
+
+Table 6: market snapshot
+  Illinois, week ending 2026-11-13: cash bid 4.23, Dec futures 4.4520, basis -0.2220 $/bu
+  average November basis 2010-2025: -0.1954 $/bu (61 weeks)
+  lowest basis since September 1: -0.3420 $/bu, week ending 2026-09-25
+  CFTC COT, CBOT corn, positions on 2026-11-17: open interest 1,954,229 contracts
+    Producer/merchant/processor/user   long   466,484  short   838,543  net   -372,059 (-19.0% of OI)
+    Swap dealers                       long   293,993  short    19,359  net   +274,634 (+14.1% of OI)
+    Managed money                      long   244,177  short   278,039  net    -33,862 (-1.7% of OI)
+    Other reportables                  long   187,642  short    73,990  net   +113,652 (+5.8% of OI)
+    Non-reportable (small traders)     long   181,977  short   164,342  net    +17,635 (+0.9% of OI)

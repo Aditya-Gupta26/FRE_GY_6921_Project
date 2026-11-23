@@ -1,0 +1,11 @@
+step,count
+"Weekly observations, 2010-01-08 to 2025-12-26",811
+Pairs of consecutive weeks,810
+Pairs exactly seven days apart,743
+Same futures contract in both weeks,674
+Contract labels pass the CBOT calendar check,672
+No suspected recording error,670
+Sale before first notice day (eligible),641
+"Eligible pairs, train",396
+"Eligible pairs, validation",77
+"Eligible pairs, test",168

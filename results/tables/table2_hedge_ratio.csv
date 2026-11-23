@@ -1,0 +1,2 @@
+sample,pairs,h_star,se_h,r2,N_star_unrounded,N_star,rolling_h_min_test,rolling_h_median_test,rolling_h_max_test,rolling_N_min_test,rolling_N_max_test
+train 2010-2019,396,0.9695759057171489,0.017861855153574392,0.8820545567093905,9.69575905717149,10,0.8262419671307983,0.9147484522404408,0.9800924748824394,8,10

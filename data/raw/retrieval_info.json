@@ -1,0 +1,14 @@
+{
+  "dataset": "USDA AMS Grain Basis (https://agtransport.usda.gov/Grain/Grain-Basis/v85y-3hep)",
+  "filter": "market_name='Illinois' AND market_type='Elevator Bid' AND commodity='Corn'",
+  "request_url": "https://agtransport.usda.gov/resource/v85y-3hep.csv?%24where=market_name%3D%27Illinois%27+AND+market_type%3D%27Elevator+Bid%27+AND+commodity%3D%27Corn%27&%24order=date&%24limit=50000",
+  "retrieved_utc": "2026-11-21 13:27",
+  "dataset_last_updated_utc": "2026-11-19 17:00",
+  "rows": 1008,
+  "first_date": "2007-01-05",
+  "last_date": "2026-11-13",
+  "cot_dataset": "CFTC Commitments of Traders, disaggregated futures only (https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm)",
+  "cot_request_url": "https://publicreporting.cftc.gov/resource/72hh-3qpy.csv?%24select=report_date_as_yyyy_mm_dd%2Cmarket_and_exchange_names%2Copen_interest_all%2Cprod_merc_positions_long%2Cprod_merc_positions_short%2Cswap_positions_long_all%2Cswap__positions_short_all%2Cm_money_positions_long_all%2Cm_money_positions_short_all%2Cother_rept_positions_long%2Cother_rept_positions_short%2Cnonrept_positions_long_all%2Cnonrept_positions_short_all&%24where=cftc_contract_market_code%3D%27002602%27&%24order=report_date_as_yyyy_mm_dd+DESC&%24limit=52",
+  "cot_reports": 52,
+  "cot_latest_report_date": "2026-11-17"
+}
