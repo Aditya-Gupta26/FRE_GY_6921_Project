@@ -1,0 +1,10 @@
+horizon_weeks,window_observations,eligible_test_holds,scheduled_test_holds,holds_with_full_window,common_test_trades
+1,52,168,168,168,168
+1,104,168,168,168,168
+1,156,168,168,168,168
+2,52,143,72,72,72
+2,104,143,72,72,72
+2,156,143,72,72,72
+4,52,98,25,25,25
+4,104,98,25,25,25
+4,156,98,25,25,25

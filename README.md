@@ -96,3 +96,49 @@ We train on 2010-2019, select model settings on 2020-2021, and keep 2022-2025 fo
 test. The hedge comparison is reported on the training years and on the test years. The rolling hedge
 ratio uses only weeks whose sale date is on or before the hedge date. The forecast models are scored
 on the validation years only, so the test years stay untouched until the final report.
+
+## Hedge sensitivity checks
+
+Luanqi's contribution runs independently of the baseline:
+
+```
+python src/hedge_sensitivity.py
+python src/hedge_sensitivity.py --horizons 1 2 4 --windows 52 104 156
+```
+
+It compares no hedge, the 10-contract hedge, the static hedge estimated on the training years, and
+the rolling hedge. Every rolling ratio uses completed eligible **one-week** changes. The position
+is fixed at entry for the chosen holding period. A window of 104 means 104 eligible observations,
+which can span more than 104 calendar weeks.
+
+A holding period must be a complete chain of eligible weekly pairs with the same delivery contract
+throughout. Entry dates follow a fixed Friday schedule beginning January 7, 2022, spaced by the
+holding period. This gives nonoverlapping trades within each horizon. Within a horizon, all windows
+and all strategies use the same entry dates. Longer horizons have different samples, so differences
+across horizons also reflect which dates remain eligible.
+
+The script writes three new files:
+
+| File | Contents |
+|---|---|
+| `results/tables/hedge_sensitivity.csv` | Risk measures for each horizon, window and strategy |
+| `results/tables/hedge_sensitivity_coverage.csv` | Candidate, scheduled and retained trade counts |
+| `data/processed/hedge_sensitivity_ledger.csv` | Positions, estimation dates, proceeds and changes for every trade |
+
+With the saved data and the 104-observation window, the results are:
+
+| Holding period | Test trades | Variance reduction for 1:1 | Variance reduction for rolling |
+|---|---:|---:|---:|
+| 1 week | 168 | 72.53% | 73.01% |
+| 2 weeks | 72 | 75.12% | 75.22% |
+| 4 weeks | 25 | 56.76% | 54.78% |
+
+Variance reduction measures the change in effective sale price relative to its entry cash value.
+The `vr_minus_1to1_pp` column is the difference in variance reduction in percentage points.
+The one-week, 104-observation result reproduces the existing hedge ledger. The four-week sample
+has only 25 trades. Treat the grid as descriptive sensitivity and retain the prespecified
+104-observation baseline when discussing the main results.
+
+The analysis inherits the existing cleaning choices, retrospective roll exclusions, and exchange
+calendar that skips weekends but does not adjust for exchange holidays. It excludes transaction
+and margin financing costs, as the baseline does.
